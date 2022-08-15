@@ -1,3 +1,4 @@
+using AuthenticationServices;
 using Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -25,60 +26,62 @@ builder.Services.AddIdentityCore<AppUser>(options => {
 }).AddEntityFrameworkStores<DataContext>()
 .AddSignInManager<SignInManager<AppUser>>();
 
-builder.Services.AddAuthentication(options =>
-{
-    // custom scheme defined in .AddPolicyScheme() below
-    options.DefaultAuthenticateScheme = "JWT_OR_COOKIE";
-    options.DefaultChallengeScheme = "JWT_OR_COOKIE";
-    options.DefaultScheme = "JWT_OR_COOKIE";
-})
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.SaveToken = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:7188",
-            ValidAudience = "https://localhost:7188",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtKey")))
-        };
-    })
-    .AddCookie("Cookies", options =>
-    {
-        options.LoginPath = "/login";
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
-        options.AccessDeniedPath = "/api/Authentication/NotAuthorized";
-        options.Cookie.SameSite =  Microsoft.AspNetCore.Http.SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Events.OnRedirectToLogin = ctx =>
-        {
-            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return Task.CompletedTask;
-        };
-        options.Events.OnRedirectToAccessDenied = ctx =>
-        {
-            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        };
-    })
-// this is what chooses the default schema based on cookie or jwt.
-    .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
-    {
-        // runs on each request
-        options.ForwardDefaultSelector = context =>
-        {
-            // filter by auth type
-            string authorization = context.Request.Headers[HeaderNames.Authorization];
-           if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
-                return "Bearer";
+builder.Services.AddAuthenticationServices(new Config() { IssuerSigningKey = builder.Configuration.GetValue<string>("JwtKey") });
 
-            // otherwise always check for cookie auth
-           return "Cookies";
-        };
-    });
+//builder.Services.AddAuthentication(options =>
+//{
+//    // custom scheme defined in .AddPolicyScheme() below
+//    options.DefaultAuthenticateScheme = "JWT_OR_COOKIE";
+//    options.DefaultChallengeScheme = "JWT_OR_COOKIE";
+//    options.DefaultScheme = "JWT_OR_COOKIE";
+//})
+//    .AddJwtBearer("Bearer", options =>
+//    {
+//        options.SaveToken = true;
+//        options.RequireHttpsMetadata = false;
+//        options.TokenValidationParameters = new TokenValidationParameters()
+//        {
+//            ValidateIssuer = false,
+//            ValidateAudience = false,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = "https://localhost:7188",
+//            ValidAudience = "https://localhost:7188",
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JwtKey")))
+//        };
+//    })
+//    .AddCookie("Cookies", options =>
+//    {
+//        options.LoginPath = "/login";
+//        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+//        options.AccessDeniedPath = "/api/Authentication/NotAuthorized";
+//        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+//        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//        options.Events.OnRedirectToLogin = ctx =>
+//        {
+//            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+//            return Task.CompletedTask;
+//        };
+//        options.Events.OnRedirectToAccessDenied = ctx =>
+//        {
+//            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+//            return Task.CompletedTask;
+//        };
+//    })
+//// this is what chooses the default schema based on cookie or jwt.
+//    .AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
+//    {
+//        // runs on each request
+//        options.ForwardDefaultSelector = context =>
+//        {
+//            // filter by auth type
+//            string authorization = context.Request.Headers[HeaderNames.Authorization];
+//            if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+//                return "Bearer";
+
+//            // otherwise always check for cookie auth
+//            return "Cookies";
+//        };
+//    });
 
 builder.Services.AddScoped<TokenService>();
 

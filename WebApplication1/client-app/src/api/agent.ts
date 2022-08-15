@@ -23,7 +23,7 @@ const requests = {
 }
 
 const Account = {
-    login: () => requests.post<User>('/Authentication/login', {userName: 'james', password: 'P@ssw0rd'}),
+    login: () => requests.post<User>('/Authentication/login', {userName: 'admin', password: 'P@ssw0rd'}),
     logout: () => requests.get<User>('/Authentication/logout'),
     userDetails: () => requests.get<User>('/Authentication/userDetails'),
 }

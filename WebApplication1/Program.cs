@@ -20,12 +20,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DataContext>(options =>
 options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Persistence")));
 
-builder.Services.AddIdentityCore<AppUser>(options => {
-    options.Password.RequiredLength = 4;
-    options.Password.RequireNonAlphanumeric = false;
-}).AddEntityFrameworkStores<DataContext>()
-.AddSignInManager<SignInManager<AppUser>>();
+//builder.Services.AddIdentityCore<AppUser>(options => {
+//    options.Password.RequiredLength = 4;
+//    options.Password.RequireNonAlphanumeric = false;
+//}).AddEntityFrameworkStores<DataContext>()
+//.AddSignInManager<SignInManager<AppUser>>();
 
+builder.Services.AddIdenetyCoreDefaults<AppUser, DataContext>();
 builder.Services.AddAuthenticationServices(new Config() { IssuerSigningKey = builder.Configuration.GetValue<string>("JwtKey") });
 
 //builder.Services.AddAuthentication(options =>

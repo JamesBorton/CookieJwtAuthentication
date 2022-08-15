@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +15,17 @@ namespace AuthenticationServices
 {
     public static class AuthenticationServices
     {
-        public static void AddAuthenticationServices(this IServiceCollection services, Config config)
+        public static void AddIdenetyCoreDefaults<TUser, TContext>(this IServiceCollection services) where TUser : class
+            where TContext : Microsoft.EntityFrameworkCore.DbContext
+        {
+            services.AddIdentityCore<TUser>(options => {
+                options.Password.RequiredLength = 4;
+                options.Password.RequireNonAlphanumeric = false;
+            }).AddEntityFrameworkStores<TContext>()
+            .AddSignInManager<SignInManager<TUser>>();
+        }
+
+        public static void AddAuthenticationServices(this IServiceCollection services, Config config) 
         {
             // register your services here
             services.AddAuthentication(options =>

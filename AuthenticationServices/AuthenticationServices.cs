@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -15,6 +16,7 @@ namespace AuthenticationServices
 {
     public static class AuthenticationServices
     {
+
         public static void AddIdenetyCoreDefaults<TUser, TContext>(this IServiceCollection services) where TUser : class
             where TContext : Microsoft.EntityFrameworkCore.DbContext
         {
@@ -25,7 +27,7 @@ namespace AuthenticationServices
             .AddSignInManager<SignInManager<TUser>>();
         }
 
-        public static void AddAuthenticationServices(this IServiceCollection services, Config config) 
+        public static void AddAuthenticationServices(this IServiceCollection services, AuthenticationServiceConfig settings) 
         {
             // register your services here
             services.AddAuthentication(options =>
@@ -44,10 +46,10 @@ namespace AuthenticationServices
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = string.IsNullOrWhiteSpace(config.ValidIssuer) ? config.ValidIssuer : "https://localhost:7188",
-            ValidAudience = string.IsNullOrWhiteSpace(config.ValidAudience) ? config.ValidAudience : "https://localhost:7188",
+            ValidIssuer = string.IsNullOrWhiteSpace(settings.ValidIssuer) ? settings.ValidIssuer : "https://localhost:7188",
+            ValidAudience = string.IsNullOrWhiteSpace(settings.ValidAudience) ? settings.ValidAudience : "https://localhost:7188",
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(string.IsNullOrWhiteSpace(config.IssuerSigningKey) ? config.IssuerSigningKey : "default"))
+                Encoding.UTF8.GetBytes(string.IsNullOrWhiteSpace(settings.IssuerSigningKey) ? settings.IssuerSigningKey : "default"))
         };
     })
     .AddCookie("Cookies", options =>
@@ -86,7 +88,7 @@ namespace AuthenticationServices
         }
     }
 
-    public class Config
+    public class AuthenticationServiceConfig
     {
         public string ValidIssuer { get; set; }
         public string ValidAudience { get; set; }

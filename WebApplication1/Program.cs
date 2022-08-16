@@ -26,8 +26,10 @@ options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Persistence"))
 //}).AddEntityFrameworkStores<DataContext>()
 //.AddSignInManager<SignInManager<AppUser>>();
 
+AuthenticationServiceConfig authConfig = builder.Configuration.GetSection("AuthenticationServiceConfig").Get<AuthenticationServiceConfig>();
+
 builder.Services.AddIdenetyCoreDefaults<AppUser, DataContext>();
-builder.Services.AddAuthenticationServices(new Config() { IssuerSigningKey = builder.Configuration.GetValue<string>("JwtKey") });
+builder.Services.AddAuthenticationServices(authConfig);
 
 //builder.Services.AddAuthentication(options =>
 //{

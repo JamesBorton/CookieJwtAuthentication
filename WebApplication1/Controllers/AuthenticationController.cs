@@ -113,6 +113,13 @@ namespace WebApplication1.Controllers
             return Unauthorized();
         }
 
+        [HttpGet("Forbidden")]
+        public async Task<ActionResult> Forbidden()
+        {
+            
+            return Forbid();
+        }
+
 
         private async Task<UserDto> CreateUserObject(AppUser user)
         {

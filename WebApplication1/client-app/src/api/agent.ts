@@ -1,9 +1,37 @@
-import axios, { AxiosResponse } from "axios";
-import { User } from "../models/user";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { toast } from "react-toastify";
+import { User, UserDetails, UserFormValues } from "../models/user";
 
 //Change this localhost to whatever dotnet is
 axios.defaults.baseURL = 'https://localhost:7188/api';
 axios.defaults.withCredentials = true;
+
+axios.interceptors.response.use(async response => {
+    return response;
+}, (error: Error | AxiosError) => {
+    if (axios.isAxiosError(error))  {
+        // Access to config, request, and response
+        const { status } = error.response!;
+    switch (status) {
+        case 400:
+            toast.error('Error');
+            break;
+        case 401:
+            toast.error('Session expired - please login again');
+            break;
+        case 404:
+            toast.error('Not found!');
+            break;
+        case 500:
+            toast.error('Server error!');
+            break;
+      } 
+    }
+    else {
+        toast.error('General error!');
+      }
+    return Promise.reject(error);
+});
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
@@ -23,9 +51,9 @@ const requests = {
 }
 
 const Account = {
-    login: () => requests.post<User>('/Authentication/login', {userName: 'admin', password: 'P@ssw0rd'}),
+    login: (form: UserFormValues) => requests.post<UserDetails>('/Authentication/login', form),
     logout: () => requests.get<User>('/Authentication/logout'),
-    userDetails: () => requests.get<User>('/Authentication/userDetails'),
+    userDetails: () => requests.get<UserDetails>('/Authentication/userDetails'),
 }
 
 const agent = {

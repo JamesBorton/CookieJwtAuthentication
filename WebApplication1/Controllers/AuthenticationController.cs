@@ -162,7 +162,9 @@ namespace WebApplication1.Controllers
                     return new UserDto()
                     {
                         Username = User.Identity.Name,
-                        Token = _tokenService.CreateToken(user)
+                        Token = _tokenService.CreateToken(user),
+                        Image = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+                        DisplayName = User.Identity.Name
                     };
                 }
                 else return null;

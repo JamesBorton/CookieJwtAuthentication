@@ -1,3 +1,4 @@
+import { Button } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import agent from '../../api/agent';
@@ -25,15 +26,15 @@ export default observer(function AuthenticationTestMobX() {
         <p>Image: {userStore.userDetails.image}</p>
         </>
         }
-        <button onClick={() => userStore.login({username: 'admin', password: 'P@ssw0rd'})}>
+        <Button onClick={() => userStore.login({username: 'james', password: 'P@ssw0rd'})}>
             Login
-        </button>
-        <button onClick={userStore.logout}>
+        </Button> <br/>
+        <Button onClick={userStore.logout}>
             Logout
-        </button>
-        <button onClick={userStore.getUser}>
+        </Button> <br/>
+        <Button onClick={userStore.getUser}>
             getUserDetails
-        </button>
+        </Button>
         </>
     )
 })

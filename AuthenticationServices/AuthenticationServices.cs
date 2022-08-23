@@ -55,7 +55,10 @@ namespace AuthenticationServices
     .AddCookie("Cookies", options =>
     {
         options.LoginPath = "/login";
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        //UseTokenLifetime = false;
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+        options.Cookie.MaxAge = options.ExpireTimeSpan;
         options.AccessDeniedPath = "/api/Authentication/NotAuthorized";
         options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;

@@ -13,6 +13,7 @@ import {
 import { observer } from 'mobx-react-lite'
   import * as React from 'react'
   import { FiHelpCircle, FiMenu, FiSearch, FiSettings } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
 import { useStore } from '../../stores/store'
   import { Logo } from './Logo'
   
@@ -28,11 +29,9 @@ import { useStore } from '../../stores/store'
                 <Logo />
                 {isDesktop && (
                   <ButtonGroup variant="ghost" spacing="1">
-                    <Button>Home</Button>
-                    <Button aria-current="page">Dashboard</Button>
-                    <Button>Tasks</Button>
-                    <Button>Bookmarks</Button>
-                    <Button>Users</Button>
+                    <Link to='/'><Button>Home</Button></Link>
+                    <Link to='/profile'><Button>Profile</Button></Link>
+                    <Link to='/login'><Button>Login</Button></Link>
                   </ButtonGroup>
                 )}
               </HStack>
@@ -44,7 +43,7 @@ import { useStore } from '../../stores/store'
                     <IconButton icon={<FiHelpCircle fontSize="1.25rem" />} aria-label="Help Center" />
                   </ButtonGroup>
                   {userStore.userDetails == null ? (
-                    <Button onClick={() => userStore.login({username:'james', password: 'P@ssw0rd'})}>Login</Button>
+                    <Button onClick={() => userStore.login({username:'admin', password: 'P@ssw0rd'})}>Login</Button>
                   ) : (
                     <>
                     <Avatar boxSize="10" name={userStore.userDetails.displayName} src={userStore.userDetails.image} />

@@ -26,7 +26,7 @@ export default observer(function AuthenticationTestMobX() {
         <p>Image: {userStore.userDetails.image}</p>
         </>
         }
-        <Button onClick={() => userStore.login({username: 'james', password: 'P@ssw0rd'})}>
+        <Button onClick={() => userStore.login({username: 'admin', password: 'P@ssw0rd'})}>
             Login
         </Button> <br/>
         <Button onClick={userStore.logout}>

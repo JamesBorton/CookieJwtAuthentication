@@ -17,7 +17,7 @@ axios.interceptors.response.use(async response => {
             toast.error('Error');
             break;
         case 401:
-            toast.error('Session expired - please login again');
+            //toast.error('Session expired - please login again');
             break;
         case 404:
             toast.error('Not found!');

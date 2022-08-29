@@ -1,13 +1,11 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     Button,
     Checkbox,
     Container,
-    Divider,
     FormControl,
-    FormErrorMessage,
     FormLabel,
     Heading,
     HStack,
@@ -23,11 +21,12 @@ import {
     useMergeRefs,
 } from '@chakra-ui/react'
 import { Logo } from '../nav/Logo';
-import { PasswordField } from '../PasswordField';
-import { Field, Form, Formik, FormikHelpers, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import * as yup from 'yup';
 import FormErrorMessageCustom from '../forms/FormErrorMessageCustom';
 import { HiEye, HiEyeOff } from 'react-icons/hi';
+import { useStore } from '../../stores/store';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = yup.object({
     username: yup
@@ -35,19 +34,21 @@ const validationSchema = yup.object({
         .required('Username is required'),
     password: yup
         .string()
-        .min(8, 'Password should be of minimum 8 characters length')
         .required('Password is required'),
 });
 export default observer(function Login() {
-    const { isOpen, onToggle } = useDisclosure()
-const inputRef = React.useRef<HTMLInputElement>(null)
+    const { userStore } = useStore();
+    const { userDetails, showLoginError, login, getUser } = userStore;
+    const { isOpen, onToggle } = useDisclosure();
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    let navigate = useNavigate();
 
-const onClickReveal = () => {
-    onToggle()
-    if (inputRef.current) {
-        inputRef.current.focus({ preventScroll: true })
+    const onClickReveal = () => {
+        onToggle()
+        if (inputRef.current) {
+            inputRef.current.focus({ preventScroll: true })
+        }
     }
-}
 
     const formik = useFormik({
         initialValues: {
@@ -56,9 +57,22 @@ const onClickReveal = () => {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            login({ username: values.username, password: values.password })
+            .then(()=> {
+                navigate('/profile');
+            });
+            console.log(JSON.stringify(values, null, 2));
         },
     });
+
+    useEffect(() => {
+        getUser()
+        .then(() => {
+            if(userStore.userDetails !== null) {
+                navigate('/profile');
+            }
+        })
+    }, []);
 
     return (
         <>
@@ -123,6 +137,11 @@ const onClickReveal = () => {
                                         <FormErrorMessageCustom message={formik.errors.password} />
                                     </FormControl>
                                 </Stack>
+                                {showLoginError && (
+                                    <Stack>
+                                        <Text color='red'>Invalid credentials provided.</Text>
+                                    </Stack>
+                                )}
                                 <HStack justify="space-between">
                                     <Checkbox defaultChecked>Remember me</Checkbox>
                                     <Button variant="link" colorScheme="blue" size="sm">

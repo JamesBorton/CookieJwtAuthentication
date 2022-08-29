@@ -22,7 +22,7 @@ const config = {
 const myTheme = extendTheme(
   {
     config,
-    colors: { ...theme.colors, brand: theme.colors.red },
+    colors: { ...theme.colors, brand: theme.colors.blue },
   },
   theme,
 )

@@ -9,6 +9,7 @@ export default class UserStore {
     token: string | null = null;
     userDetails: UserDetails | null = null;
     attempted: boolean = false;
+    showLoginError: boolean = false;
 
     constructor() {
         makeAutoObservable(this)
@@ -16,12 +17,13 @@ export default class UserStore {
 
     login = async (creds: UserFormValues) => {
         try {
+            this.setLoginErrorBool(false);
             const user = await agent.Account.login(creds);
             this.setToken(user.token);
             runInAction(() => this.userDetails = user);
-            toast.success('Logged in!');
             this.getUser();
         } catch (error) {
+            this.setLoginErrorBool(true);
             throw error;
         }
     }
@@ -31,7 +33,6 @@ export default class UserStore {
             .then(() => {
                 this.setToken(null);
                 this.userDetails = null;
-                toast.success('Logged out!');
             })
             .catch(() => {
                 console.log('Error during logout.');
@@ -43,7 +44,6 @@ export default class UserStore {
             const user = await agent.Account.userDetails();
             this.setToken(user.token);
             runInAction(() => this.userDetails = user);
-            toast.success('Got user data!');
         } catch (error) {
             console.log(error);
         }
@@ -51,6 +51,10 @@ export default class UserStore {
 
     setToken = (token: string | null) => {
         this.token = token;
+    }
+
+    setLoginErrorBool = (show: boolean) => {
+        this.showLoginError = show;
     }
 
     setAttempted = (attempted: boolean) => {

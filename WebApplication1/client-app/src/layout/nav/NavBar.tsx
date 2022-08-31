@@ -15,6 +15,7 @@ import { observer } from 'mobx-react-lite'
   import { FiHelpCircle, FiMenu, FiSearch, FiSettings } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useStore } from '../../stores/store'
+import { GMLogo } from './GMLogo'
   import { Logo } from './Logo'
   
   export default observer(function NavBar () {
@@ -26,7 +27,7 @@ import { useStore } from '../../stores/store'
           <Container py={{ base: '3', lg: '4' }}>
             <Flex justify="space-between">
               <HStack spacing="4">
-                <Logo />
+                <GMLogo />
                 {isDesktop && (
                   <ButtonGroup variant="ghost" spacing="1">
                     <Link to='/'><Button>Home</Button></Link>
